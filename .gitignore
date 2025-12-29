@@ -4,3 +4,6 @@ build/
 
 # doxygen documentation
 html/
+
+# DS_Store
+.DS_Store
