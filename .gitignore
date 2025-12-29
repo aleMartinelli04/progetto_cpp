@@ -5,5 +5,8 @@ build/
 # doxygen documentation
 html/
 
+# .txt file
+test_set.txt
+
 # DS_Store
 .DS_Store
