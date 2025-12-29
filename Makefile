@@ -1,14 +1,14 @@
 bin/main.exe: build/main.o
 	mkdir -p bin/
-	g++ build/main.o -o bin/set.exe
+	g++ build/main.o -o bin/main.exe
 
 build/main.o: main.cpp
 	mkdir -p build/
 	g++ -c main.cpp -o build/main.o
 
 .PHONY: exec
-exec: bin/set.exe
-	./bin/set.exe
+exec: bin/main.exe
+	./bin/main.exe
 
 .PHONY: clean
 clean:
