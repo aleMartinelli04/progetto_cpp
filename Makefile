@@ -12,8 +12,15 @@ exec: bin/main.exe
 
 .PHONY: clean
 clean:
-	rm -r bin/
-	rm -r build/
+	rm -rf bin/
+	rm -rf build/
+
+.PHONY: cleanall
+cleanall:
+	rm -rf bin/
+	rm -rf build/
+	rm -rf html/
+	rm *.txt
 
 .PHONY: doc
 doc:
