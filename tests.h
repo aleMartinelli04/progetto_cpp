@@ -6,6 +6,9 @@
  * File di dichiarazione delle funzioni di test.
  * COntiene anche l'implementazione di due funtori utili ai fini dei test.
  */
+#ifndef TESTS_H
+#define TESTS_H
+
 #include <string>
 
 /**
@@ -125,3 +128,5 @@ struct IsLongString
 {
     bool operator()(const std::string &s);
 };
+
+#endif
