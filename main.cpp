@@ -1,4 +1,6 @@
 /**
+ * @file main.cpp
+ *
  * @brief file main
  *
  * File main. Si occupa di far partire i test automatici definiti in tests.h.

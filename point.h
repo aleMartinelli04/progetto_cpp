@@ -1,7 +1,11 @@
 /**
  * @file point.h
  *
+ * @brief file di dichiarazione della struct point
+ *
  * File di dichiarazione della struct point.
+ * Contiene anche la dichiarazione delle funzioni per lettura e scrittura su stream.
+ * VIene dichiarato anche un funtore per confrontare due punti.
  */
 #ifndef POINT_H
 #define POINT_H

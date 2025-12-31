@@ -1,6 +1,8 @@
 /**
  * @file point.cpp
  *
+ * @brief file di implementazione delle funzioni per la struct point
+ *
  * File di implementazione delle funzioni per la struct point.
  */
 #include <iostream>
