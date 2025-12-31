@@ -1,6 +1,12 @@
+/**
+ * @brief file di implementazione delle funzioni di test
+ *
+ * File di implementazione delle funzioni di test.
+ * Contiene anche l'implementazione di due funtori utili ai fini dei test.
+ */
 #include <iostream>
-#include <cassert>
-#include <functional>
+#include <cassert>    // assert
+#include <functional> // std::equal_to
 #include "set.hpp"
 #include "point.h"
 #include "tests.h"
@@ -11,14 +17,14 @@ void run_all_tests()
     std::cout << "      INIZIO TEST SUITE COMPLETA        " << std::endl;
     std::cout << "========================================" << std::endl;
 
-    test_int_basics();
-    test_string_type();
-    test_custom_type();
-    test_range_constructor_raw_pointer();
-    test_rule_of_three();
-    test_iterators_and_const();
-    test_math_operators_edge_cases();
-    test_filter_predicate();
+    test_set_int();
+    test_set_string();
+    test_set_point();
+    test_constructor_iterators();
+    test_copy_constructor_assignment();
+    test_iterators();
+    test_union_intersection();
+    test_filter_out();
     test_stress_reallocation();
     test_files();
 
@@ -28,22 +34,17 @@ void run_all_tests()
     std::cout << "========================================" << std::endl;
 }
 
-// =================================================================
-// IMPLEMENTAZIONE
-// =================================================================
-
-void test_int_basics()
+void test_set_int()
 {
-    std::cout << "[1] Test Base Int... ";
+    std::cout << "[1] Test int... ";
 
     set<int, std::equal_to<int>> s;
     assert(s.size() == 0);
 
-    // Test rimozione da vuoto (non deve crashare)
+    // Test rimozione da vuoto
     s.remove(10);
     assert(s.size() == 0);
 
-    // Aggiunte
     s.add(5);
     s.add(10);
     s.add(5); // Duplicato
@@ -71,7 +72,7 @@ void test_int_basics()
     std::cout << "OK" << std::endl;
 }
 
-void test_string_type()
+void test_set_string()
 {
     std::cout << "[2] Test std::string... ";
 
@@ -85,54 +86,60 @@ void test_string_type()
     assert(s.size() == 3);
     assert(s.contains("World"));
 
-    // Test copia profonda implicita delle stringhe
-    std::string temp = "C++";
-    assert(s.contains(temp));
-
     s.remove("Hello");
     assert(s.size() == 2);
 
     std::cout << "OK" << std::endl;
 }
 
-void test_custom_type()
+void test_set_point()
 {
-    std::cout << "[3] Test Custom Type (point)... ";
+    std::cout << "[3] Test Custom Type... ";
 
     set<point, ArePointEqual> s;
     point p1 = {0, 0};
     point p2 = {1, 2};
-    point p3 = {0, 0}; // Logicamente uguale a p1
+    point p3 = {0, 0}; // Uguale a p1
 
     s.add(p1);
     s.add(p2);
     s.add(p3); // Non deve essere aggiunto
 
     assert(s.size() == 2);
-    assert(s.contains({1, 2})); // Test con temporaneo
+    assert(s.contains({1, 2}));
 
     // Test operator[]
-    // Nota: l'ordine dipende dall'inserimento
     bool found_p1 = false;
     bool found_p2 = false;
+
     for (unsigned int i = 0; i < s.size(); ++i)
     {
         if (ArePointEqual()(s[i], p1))
+        {
             found_p1 = true;
+        }
+
         if (ArePointEqual()(s[i], p2))
+        {
             found_p2 = true;
+        }
     }
-    assert(found_p1 && found_p2);
+
+    assert(found_p1);
+    assert(found_p2);
+
+    s.remove({0, 0});
+    assert(!s.contains({0, 0}));
 
     std::cout << "OK" << std::endl;
 }
 
-void test_range_constructor_raw_pointer()
+void test_constructor_iterators()
 {
-    std::cout << "[4] Test Range Constructor (Raw Array)... ";
+    std::cout << "[4] Test Iterator Constructor... ";
 
     int arr[] = {1, 2, 3, 2, 4, 1}; // Duplicati: 1, 2
-    int size_arr = sizeof(arr) / sizeof(arr[0]);
+    int size_arr = 6;
 
     // Costruiamo usando puntatori come iteratori
     set<int, std::equal_to<int>> s(arr, arr + size_arr);
@@ -149,20 +156,19 @@ void test_range_constructor_raw_pointer()
     std::cout << "OK" << std::endl;
 }
 
-void test_rule_of_three()
+void test_copy_constructor_assignment()
 {
-    std::cout << "[5] Test Rule of Three (Copy/Assign)... ";
+    std::cout << "[5] Test Copy Constructor, Assignment, Auto-assignment... ";
 
     set<int, std::equal_to<int>> s1;
     s1.add(10);
     s1.add(20);
 
-    // 1. Copy Constructor
+    // Costruttore di copia
     set<int, std::equal_to<int>> s2(s1);
     assert(s2 == s1);
     assert(s2.size() == 2);
 
-    // Deep copy check
     s1.remove(10);
     assert(s1.size() == 1);
     assert(s2.size() == 2); // s2 non deve cambiare
@@ -178,16 +184,16 @@ void test_rule_of_three()
     assert(!s3.contains(99)); // il 99 deve essere sparito
 
     // 3. Self Assignment
-    s3 = s3; // Non deve esplodere e non deve cancellare i dati
+    s3 = s3;
     assert(s3.size() == 2);
     assert(s3.contains(10));
 
     std::cout << "OK" << std::endl;
 }
 
-void test_iterators_and_const()
+void test_iterators()
 {
-    std::cout << "[6] Test Iterators & Const Correctness... ";
+    std::cout << "[6] Test Iterators... ";
 
     set<int, std::equal_to<int>> s;
     s.add(1);
@@ -218,9 +224,9 @@ void test_iterators_and_const()
     std::cout << "OK" << std::endl;
 }
 
-void test_math_operators_edge_cases()
+void test_union_intersection()
 {
-    std::cout << "[7] Test Operatori +, - (Edge Cases)... ";
+    std::cout << "[7] Test Operatori di unione (+) e di intersezione (-)... ";
 
     set<int, std::equal_to<int>> A;
     A.add(1);
@@ -232,42 +238,39 @@ void test_math_operators_edge_cases()
 
     set<int, std::equal_to<int>> Empty;
 
-    // --- TEST 1: DISGIUNTI ---
-    // A={1,2}, B={3,4}
-    // Unione: {1,2,3,4}
+    // A={1,2}, B={3,4}, Empty={}
+
+    // Unione (A + B): {1,2,3,4}
     set<int, std::equal_to<int>> U = A + B;
     assert(U.size() == 4);
 
-    // Intersezione (operator-): Vuota
+    // Intersezione (A - B): {}
     set<int, std::equal_to<int>> I = A - B;
     assert(I.size() == 0);
 
-    // --- TEST 2: IDENTICI ---
     set<int, std::equal_to<int>> A_clone = A;
 
     // Unione (A + A = A): {1,2}
     assert((A + A_clone).size() == 2);
     assert((A + A_clone) == A);
 
-    // Intersezione (A - A = A): {1,2}  <--- QUI C'ERA L'ERRORE
-    // Essendo intersezione, A intersecato A da A stesso, non vuoto!
+    // Intersezione (A - A): {1,2}
     assert((A - A_clone).size() == 2);
     assert((A - A_clone) == A);
 
-    // --- TEST 3: CON VUOTO ---
-    // A + Vuoto = A
+    // A + Empty = A
     assert((A + Empty) == A);
 
-    // A intersecato Vuoto = Vuoto
+    // A - Empty = Empty
     assert((A - Empty).size() == 0);
 
-    // Vuoto intersecato A = Vuoto
+    // Empty - A = Vuoto
     assert((Empty - A).size() == 0);
 
     std::cout << "OK" << std::endl;
 }
 
-void test_filter_predicate()
+void test_filter_out()
 {
     std::cout << "[8] Test Filter Out... ";
 
@@ -277,8 +280,6 @@ void test_filter_predicate()
     s.add("maybe");
     s.add("ok");
 
-    // Filtra stringhe lunghe (> 3 caratteri)
-    // "maybe" è l'unica lunga
     set<std::string, std::equal_to<std::string>> res = filter_out(s, IsLongString());
 
     assert(res.size() == 1);
@@ -294,23 +295,18 @@ void test_stress_reallocation()
 
     set<int, std::equal_to<int>> s;
 
-    // Aggiungo 100 elementi (0...99)
-    // Questo causa 100 chiamate a new[]/delete[]
     for (int i = 0; i < 100; ++i)
     {
         s.add(i);
     }
     assert(s.size() == 100);
 
-    // Rimuovo 100 elementi (0...99)
-    // Questo causa altre 100 riallocazioni
     for (int i = 0; i < 100; ++i)
     {
         s.remove(i);
     }
     assert(s.size() == 0);
 
-    // Aggiungo di nuovo per verificare integrità heap
     s.add(1);
     assert(s.size() == 1);
 
@@ -335,7 +331,7 @@ void test_files()
     }
     catch (...)
     {
-        std::cerr << "Errore save" << std::endl;
+        std::cout << "Errore save" << std::endl;
         assert(false);
     }
 
@@ -349,7 +345,7 @@ void test_files()
     }
     catch (...)
     {
-        std::cerr << "Errore load" << std::endl;
+        std::cout << "Errore load" << std::endl;
         assert(false);
     }
 

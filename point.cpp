@@ -1,3 +1,8 @@
+/**
+ * @file point.cpp
+ *
+ * File di implementazione delle funzioni per la struct point.
+ */
 #include <iostream>
 #include "point.h"
 
