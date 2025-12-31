@@ -20,7 +20,7 @@ cleanall:
 	rm -rf bin/
 	rm -rf build/
 	rm -rf html/
-	rm *.txt
+	rm -rf *.txt
 
 .PHONY: doc
 doc:
