@@ -1,10 +1,18 @@
-bin/main.exe: build/main.o
+bin/main.exe: build/main.o build/tests.o build/point.o
 	mkdir -p bin/
-	g++ build/main.o -o bin/main.exe
+	g++ build/main.o build/tests.o build/point.o -o bin/main.exe
 
 build/main.o: main.cpp
 	mkdir -p build/
 	g++ -c main.cpp -o build/main.o
+
+build/tests.o: tests.cpp
+	mkdir -p build/
+	g++ -c tests.cpp -o build/tests.o
+
+build/point.o: point.cpp
+	mkdir -p build/
+	g++ -c point.cpp -o build/point.o
 
 .PHONY: exec
 exec: bin/main.exe
